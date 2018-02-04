@@ -11,8 +11,9 @@ import {BrowserRouter as Router} from 'react-router-dom';
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     component: Login,
+    exact: true
   },
   {
     path: '/main',
