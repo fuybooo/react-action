@@ -22,3 +22,8 @@
          "test": "node scripts/test.js",
      2.配置文件:
          添加 test: /\.scss$/, require.resolve('sass-loader'), 即可
+         
+### 开始开发项目
+    1. 安装路由
+        yarn add react-router-dom
+        yarn add @types/react-router-dom
