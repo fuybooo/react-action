@@ -8,6 +8,7 @@ import User from './main/user/User';
 import UserUser from './main/user/user-user/UserUser';
 import UserDept from './main/user/user-dept/UserDept';
 import {BrowserRouter as Router} from 'react-router-dom';
+import Game from './main/tic-tac-toe/Game';
 
 const routes = [
   {
@@ -38,7 +39,12 @@ const routes = [
             component: UserDept
           }
         ]
-      }
+      },
+      {
+        path: '/main/game',
+        component: Game,
+        exact: true
+      },
     ]
   }
 ];
