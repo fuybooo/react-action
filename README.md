@@ -27,3 +27,12 @@
     1. 安装路由
         yarn add react-router-dom
         yarn add @types/react-router-dom
+### 开发火拼俄罗斯
+    yarn add socket.io socket通信
+    yarn add jquery 使用jquery绑定事件
+    yarn add @types/jquery 使typescript使用jquery时有类型提示?
+    yarn add @types/node 使用typescript编写node程序
+    yarn add express @types/express 使用typescript编写express
+    yarn add @types/socket.io-client 使用typescript编写socket.io
+    yarn add gulp gulp-typescript 监听node服务器端typescript变化,编译为JavaScript
+    supervisor -v

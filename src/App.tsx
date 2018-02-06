@@ -8,13 +8,14 @@ import User from './main/user/User';
 import UserUser from './main/user/user-user/UserUser';
 import UserDept from './main/user/user-dept/UserDept';
 import {BrowserRouter as Router} from 'react-router-dom';
-import Game from './main/tic-tac-toe/Game';
+import Games from './main/games/Games';
+import Game from './main/games/tic-tac-toe/Game';
+import Tetris from './main/games/tetris/Tetris';
 
 const routes = [
   {
     path: '/',
     component: Login,
-    exact: true
   },
   {
     path: '/main',
@@ -23,7 +24,6 @@ const routes = [
       {
         path: '/main/dashboard',
         component: Dashboard,
-        exact: true
       },
       {
         path: '/main/user',
@@ -32,7 +32,6 @@ const routes = [
           {
             path: '/main/user/user',
             component: UserUser,
-            exact: true
           },
           {
             path: '/main/user/dept',
@@ -42,8 +41,17 @@ const routes = [
       },
       {
         path: '/main/game',
-        component: Game,
-        exact: true
+        component: Games,
+        routes: [
+          {
+            path: '/main/game/tic-tac-toe',
+            component: Game,
+          },
+          {
+            path: '/main/game/tetris',
+            component: Tetris
+          }
+        ]
       },
     ]
   }

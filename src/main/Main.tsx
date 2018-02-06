@@ -9,7 +9,7 @@ export default class Main extends React.Component<any, any> {
       <div>
         <Link to={'/main/dashboard'}>dashboard</Link>
         <Link to={'/main/user/user'}>user</Link>
-        <Link to={'/main/game'}>game</Link>
+        <Link to={'/main/game/tic-tac-toe'}>game</Link>
         {this.props.routes.map((route: any, i: number) => (
           <RouteWithSubRoutes key={i} {...route}/>
         ))}
