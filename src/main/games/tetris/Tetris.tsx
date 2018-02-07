@@ -212,13 +212,13 @@ class Next {
       this.origin.y--;
     } else if (dir === 'right') {
       this.origin.y++;
+    } else if (dir === 'rotate') {
+      this.directive = (this.directive + 1) % 4;
+      this.squares = SQUARES[this.type][this.directive];
     }
   }
-  rotate() {
-
-  }
   getRotateData() {
-
+    return SQUARES[this.type][(this.directive + 1) % 4];
   }
 }
 function generateNext(type = Math.floor(Math.random() * 7), directive = Math.floor(Math.random() * 4)) {
@@ -237,8 +237,9 @@ interface Origin {
 declare type Dir = 'down' | 'left' | 'right' | 'rotate';
 let timer: NodeJS.Timer;
 const INTERVAL = 20;
-const velocity = 200;
+const velocity = 1000;
 let count = 0;
+const openProjection = true;
 export default class Tetris extends React.Component<any, TetrisState> {
   constructor(props: any) {
     super(props);
@@ -285,22 +286,55 @@ export default class Tetris extends React.Component<any, TetrisState> {
   }
   autoDown() {
     ++count;
+    // 进行下降操作
     if ((count * INTERVAL) % velocity === 0) {
-      if (!this.move('down')) {
-        // 固定
-        this.setData(1);
-        // 判断游戏是否结束
-        const isGameOver = this.checkGameOver();
-        if (isGameOver) {
-          this.stop();
-          this.setState({isGameOver: true});
-        } else {
-          // 下一块
-          this.preformNext();
-        }
+      this.move('down');
+    }
+    // 每20毫秒检测1次是否停止下降，进行固化操作(只检测)
+    if (!this.move('down', true)) {
+      // 固定
+      this.setData(1);
+      // 消行
+      this.checkClear();
+      // 判断游戏是否结束
+      const isGameOver = this.checkGameOver();
+      if (isGameOver) {
+        this.stop();
+        this.setState({isGameOver: true});
+      } else {
+        // 下一块
+        this.preformNext();
+      }
 
+    }
+  }
+  checkClear() {
+    let data = deepClone(this.state.squares);
+    let line = 0;
+    for (let i = data.length - 1; i >= 0; i--) {
+      let clear = true;
+      for (let j = 0; j < data[0].length; j++) {
+        // 判断fixed
+        if (data[i][j] < 10 || data[i][j] >= 20) {
+          clear = false;
+          break;
+        }
+      }
+      if (clear) {
+        line++;
+        for (let m = i; m > 0; m--) {
+          for (let n = 0; n < data[0].length; n++) {
+            data[m][n] = data[m - 1][n];
+          }
+        }
+        for (let n = 0; n < data[0].length; n++) {
+          data[0][n] = 0;
+        }
+        i++;
       }
     }
+    this.setState({squares: data});
+    return line;
   }
   checkGameOver() {
     let data = this.state.squares;
@@ -319,8 +353,9 @@ export default class Tetris extends React.Component<any, TetrisState> {
       next: generateNext()
     })
   }
-  move(dir: Dir): boolean {
+  move(dir: Dir, onlyCheck = false): boolean {
     let nextPlace = {x: 0, y: 0};
+    let currentSquares = this.state.current.squares;
     let x = this.state.current.origin.x;
     let y = this.state.current.origin.y;
     if (dir === 'down') {
@@ -339,23 +374,25 @@ export default class Tetris extends React.Component<any, TetrisState> {
         y: y + 1
       }
     } else if (dir === 'rotate') {
-
+      currentSquares = this.state.current.getRotateData();
     }
-    if (this.isValid(nextPlace)) {
-      this.setData(0); // 清除游戏画面
-      let current: Next = deepClone(this.state.current);
-      current.move(dir);
-      this.setState({current});
-      this.setData();
+    if (this.isValid(nextPlace, currentSquares)) {
+      if (!onlyCheck) {
+        this.setData(0); // 清除游戏画面
+        let current: Next = deepClone(this.state.current);
+        current.move(dir);
+        this.setState({current});
+        this.setData();
+      }
       return true;
     }
     return false;
   }
-  isValid(pos: Origin) {
-    const data = this.state.current.squares;
+  isValid(pos: Origin, currentSquares?: number[][], squares?: number[][]) {
+    const data = currentSquares || this.state.current.squares;
     for (let i = 0; i < data.length; i++) {
       for (let j = 0; j < data[i].length; j++) {
-        if (data[i][j] > 0 && !this.check(pos, i, j)) {
+        if (data[i][j] > 0 && !this.check(pos, i, j, squares)) {
           return false;
         }
       }
@@ -365,6 +402,31 @@ export default class Tetris extends React.Component<any, TetrisState> {
   setData(state?: number) {
     let squares = deepClone(this.state.squares);
     const current = this.state.current;
+    if (openProjection) {
+      // 清除投影
+      for (let m = 0; m < squares.length; m++) {
+        for (let n = 0; n < squares[m].length; n++) {
+          let dataItem = squares[m][n];
+          if (dataItem <= -20) {
+            squares[m][n] = 0;
+          }
+        }
+      }
+      if (!state) {
+        let projection: any = this.setProjection(squares);
+        // 渲染投影
+        if (projection) {
+          for (let i = 0; i < projection.squares.length; i++) {
+            for (let j = 0; j < projection.squares[i].length; j++) {
+              let projectionItem = projection.squares[i][j];
+              if (projectionItem > 2) {
+                squares[projection.origin.x + i][projection.origin.y + j] = - projectionItem;
+              }
+            }
+          }
+        }
+      }
+    }
     for (let i = 0; i < current.squares.length; i++) {
       for (let j = 0; j < current.squares[i].length; j++) {
         if (this.check(current.origin, i, j)) {
@@ -383,8 +445,30 @@ export default class Tetris extends React.Component<any, TetrisState> {
       squares
     });
   }
-  check(pos: Origin, x: number, y: number) {
-    let data = this.state.squares;
+  setProjection(squares: number[][]) {
+    const current = this.state.current;
+    let projection = this.checkDown(squares, current);
+    let projections = [];
+    while (projection) {
+      projection = this.checkDown(squares, projection);
+      projections.push(projection);
+    }
+    return projections.slice(-2, -1)[0];
+  }
+  checkDown(data: number[][], current: any) {
+    let nextPlace = {x: current.origin.x + 1, y: current.origin.y};
+    let nextData = current.squares;
+    if (this.isValid(nextPlace, nextData, data)) {
+      return {
+        origin: nextPlace,
+        squares: nextData
+      };
+    } else {
+      return false;
+    }
+  }
+  check(pos: Origin, x: number, y: number, squares?: number[][]) {
+    let data = squares || this.state.squares;
     if (
       pos.x + x < 0 ||
       pos.x + x >= data.length ||
