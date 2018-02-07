@@ -13,6 +13,9 @@ const getClientEnvironment = require('./env');
 const paths = require('./paths');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
+const tsImportPluginFactory = require('ts-import-plugin')
+const { getLoader } = require("react-app-rewired");
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -26,7 +29,7 @@ const env = getClientEnvironment(publicUrl);
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
-module.exports = {
+let config = {
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
   devtool: 'cheap-module-source-map',
@@ -117,6 +120,26 @@ module.exports = {
       // TODO: Disable require.ensure as it's not a standard language feature.
       // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
       // { parser: { requireEnsure: false } },
+
+      // {
+      //   test: /\.(jsx|tsx|js|ts)$/,
+      //   loader: 'ts-loader',
+      //   options: {
+      //     transpileOnly: true,
+      //     getCustomTransformers: () => ({
+      //       before: [ tsImportPluginFactory({
+      //         libraryName: 'antd',
+      //         libraryDirectory: 'lib',
+      //         // style: 'css',
+      //         style: true,
+      //       }) ]
+      //     }),
+      //     compilerOptions: {
+      //       module: 'es2015'
+      //     }
+      //   },
+      //   exclude: /node_modules/
+      // },
 
       {
         test: /\.(js|jsx|mjs)$/,
@@ -303,3 +326,23 @@ module.exports = {
     hints: false,
   },
 };
+
+const tsLoader = getLoader(
+  config.module.rules,
+  rule =>
+    rule.loader &&
+    typeof rule.loader === 'string' &&
+    rule.loader.includes('ts-loader')
+);
+
+tsLoader.options = {
+  getCustomTransformers: () => ({
+    before: [tsImportPluginFactory({
+      libraryName: 'antd',
+      libraryDirectory: 'es',
+      style: 'css',
+      // style: true,
+    })]
+  })
+};
+module.exports = config;

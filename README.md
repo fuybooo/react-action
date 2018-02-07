@@ -36,3 +36,7 @@
     yarn add @types/socket.io-client 使用typescript编写socket.io
     yarn add gulp gulp-typescript 监听node服务器端typescript变化,编译为JavaScript
     supervisor -v
+### 难点解决
+        1. 使用yarn eject之后,会导致上面配置的ts-import-plugin插件失效
+          1. 安装react-scripts包 yarn add react-scripts
+          2. 将之前添加的config-overrides.js中的配置加入到webpack.config.dev.js中

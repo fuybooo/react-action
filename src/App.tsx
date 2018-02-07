@@ -11,11 +11,13 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import Games from './main/games/Games';
 import Game from './main/games/tic-tac-toe/Game';
 import Tetris from './main/games/tetris/Tetris';
+import {Switch} from 'react-router';
 
 const routes = [
   {
     path: '/',
     component: Login,
+    exact: true,
   },
   {
     path: '/main',
@@ -24,6 +26,7 @@ const routes = [
       {
         path: '/main/dashboard',
         component: Dashboard,
+        exact: true,
       },
       {
         path: '/main/user',
@@ -32,10 +35,12 @@ const routes = [
           {
             path: '/main/user/user',
             component: UserUser,
+            exact: true,
           },
           {
             path: '/main/user/dept',
-            component: UserDept
+            component: UserDept,
+            exact: true,
           }
         ]
       },
@@ -46,10 +51,12 @@ const routes = [
           {
             path: '/main/game/tic-tac-toe',
             component: Game,
+            exact: true,
           },
           {
             path: '/main/game/tetris',
-            component: Tetris
+            component: Tetris,
+            exact: true,
           }
         ]
       },
@@ -62,9 +69,11 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          {routes.map((route, i) => (
-            <RouteWithSubRoutes key={i} {...route}/>
-          ))}
+          <Switch>
+            {routes.map((route, i) => (
+              <RouteWithSubRoutes key={i} {...route}/>
+            ))}
+          </Switch>
         </div>
       </Router>
     );

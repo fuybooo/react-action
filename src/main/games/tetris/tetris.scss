@@ -22,6 +22,14 @@
   border: 1px solid $blue-3;
   box-sizing: border-box;
 }
+.tetris-info {
+  float: left;
+  margin-top: 120px;
+  margin-left: -80px;
+  border: 1px solid $gray-10;
+  width: 80px;
+  height: 300px;
+}
 
 .block-none {
   border-color: $gray-4;

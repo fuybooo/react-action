@@ -229,6 +229,7 @@ interface TetrisState {
   next: Next;
   current: Next;
   isGameOver: boolean;
+  score: number;
 }
 interface Origin {
   x: number;
@@ -248,6 +249,7 @@ export default class Tetris extends React.Component<any, TetrisState> {
       next: generateNext(),
       current: generateNext(),
       isGameOver: false,
+      score: 0,
     };
   }
   componentDidMount() {
@@ -295,7 +297,10 @@ export default class Tetris extends React.Component<any, TetrisState> {
       // 固定
       this.setData(1);
       // 消行
-      this.checkClear();
+      const line = this.checkClear();
+      this.setState({
+        score: this.state.score + this.getScore(line)
+      });
       // 判断游戏是否结束
       const isGameOver = this.checkGameOver();
       if (isGameOver) {
@@ -307,6 +312,24 @@ export default class Tetris extends React.Component<any, TetrisState> {
       }
 
     }
+  }
+  getScore(line: number): number {
+    let score = 0;
+    switch (line) {
+      case 1:
+        score = 1;
+        break;
+      case 2:
+        score = 3;
+        break;
+      case 3:
+        score = 6;
+        break;
+      case 4:
+        score = 10;
+        break;
+    }
+    return score;
   }
   checkClear() {
     let data = deepClone(this.state.squares);
@@ -493,6 +516,10 @@ export default class Tetris extends React.Component<any, TetrisState> {
           </div>
           <div className={'next-box'}>
             <TetrisBlock squares={this.state.next.squares}/>
+          </div>
+          <div className={'tetris-info'}>
+            <p>得分:{this.state.score}</p>
+            {this.state.isGameOver ? (<p>游戏结束</p>) : ''}
           </div>
         </div>
         <div className={'cb'}/>

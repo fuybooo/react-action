@@ -14,6 +14,9 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
+const tsImportPluginFactory = require('ts-import-plugin')
+const { getLoader } = require("react-app-rewired");
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -50,7 +53,7 @@ const extractTextPluginOptions = shouldUseRelativeAssetPaths
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
-module.exports = {
+let config = {
   // Don't attempt to continue if there are any errors.
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
@@ -384,3 +387,23 @@ module.exports = {
     child_process: 'empty',
   },
 };
+
+const tsLoader = getLoader(
+  config.module.rules,
+  rule =>
+    rule.loader &&
+    typeof rule.loader === 'string' &&
+    rule.loader.includes('ts-loader')
+);
+
+tsLoader.options = {
+  getCustomTransformers: () => ({
+    before: [tsImportPluginFactory({
+      libraryName: 'antd',
+      libraryDirectory: 'es',
+      style: 'css',
+      // style: true,
+    })]
+  })
+};
+module.exports = config;

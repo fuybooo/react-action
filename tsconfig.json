@@ -20,6 +20,8 @@
   "exclude": [
     "node_modules",
     "build",
+    "server",
+    "server-dist",
     "scripts",
     "acceptance-tests",
     "webpack",
