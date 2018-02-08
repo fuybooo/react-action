@@ -1,0 +1,23 @@
+@import "../shared/assets/vars.scss";
+.login-page {
+  height: 100%;
+  background-color: $purple-7;
+}
+/**
+  228px 是登录表单的高度,可以根据实际调整
+ */
+.login-box {
+  margin-top: calc((100vh - 299px) / 2);
+  background-color: $gray-1;
+  padding: 20px 20px 1px 20px;
+  border-radius: 4px;
+  box-shadow: 0 0 30px $gray-9;
+}
+/**
+  当浏览器高度小于400px时执行
+ */
+@media (max-height: 400px) {
+  .login-box {
+    margin-top: calc((400px - 299px) / 2);
+  }
+}

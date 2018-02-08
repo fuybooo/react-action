@@ -68,13 +68,11 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div>
-          <Switch>
-            {routes.map((route, i) => (
-              <RouteWithSubRoutes key={i} {...route}/>
-            ))}
-          </Switch>
-        </div>
+        <Switch>
+          {routes.map((route, i) => (
+            <RouteWithSubRoutes key={i} {...route}/>
+          ))}
+        </Switch>
       </Router>
     );
   }
