@@ -1,0 +1,33 @@
+@import "../shared/assets/vars.scss";
+.main-container {
+  background-color: $gray-1;
+  padding: 24px;
+  overflow: auto;
+}
+@media screen and (max-height: 581px) {
+  .main-container {
+    min-height: 400px;
+  }
+}@media screen and (min-height: 581px) {
+  .main-container {
+    height: calc(100vh - 181px);
+  }
+}
+.layout .logo-wrap {
+  height: 50px;
+  width: 100px;
+  margin-top: 7px;
+  float: left;
+}
+.main-logo {
+  vertical-align: baseline;
+  animation: logo-spin infinite 20s linear;
+}
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

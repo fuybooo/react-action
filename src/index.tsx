@@ -6,7 +6,6 @@ import './shared/assets/vars.scss';
 import './shared/assets/app-base.scss';
 import './shared/assets/common.scss';
 import './index.scss';
-
 ReactDOM.render(
   <App />,
   document.getElementById('root') as HTMLElement
