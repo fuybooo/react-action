@@ -1,15 +1,15 @@
-@import "../../../shared/assets/vars.scss";
+@import "../../../shared/assets/scss/vars.scss";
 .host-box {
-  width: 200px;
-  height: 400px;
+  width: 202px;
+  height: 402px;
   margin-top: 20px;
   margin-left: 20px;
   border: 1px solid $gray-10;
   float: left;
 }
 .next-box {
-  width: 80px;
-  height: 80px;
+  width: 82px;
+  height: 82px;
   margin-top: 20px;
   margin-left: 20px;
   border: 1px solid $gray-10;
@@ -21,6 +21,8 @@
   height: 20px;
   border: 1px solid $blue-3;
   box-sizing: border-box;
+  border-radius: 2px;
+  box-shadow: inset 0 0 4px #000;
 }
 .tetris-info {
   float: left;

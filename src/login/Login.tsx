@@ -2,6 +2,8 @@ import * as React from 'react';
 import LoginForm from './LoginForm';
 import { Form, Row, Col } from 'antd';
 import './login.scss';
+import * as $ from 'jquery';
+import urls, {HttpRes} from '../shared/http/urls';
 export interface LoginProps {
   history: any;
 }
@@ -11,7 +13,12 @@ export default class Login extends React.Component<LoginProps, any> {
   }
   submitLoginForm(e: any) {
     e.preventDefault();
-    this.props.history.push('/main/dashboard');
+    $.post(urls.login, {username: 'admin', password: 'adminA', lng: 'zh'}, (res: HttpRes) => {
+      if (res.code === '200') {
+        this.props.history.push('/main/dashboard');
+      }
+    });
+
   }
   render() {
     const WrappedLoginForm = Form.create()(LoginForm);

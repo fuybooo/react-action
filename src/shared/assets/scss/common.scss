@@ -1,0 +1,30 @@
+@import "./vars.scss";
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+}
+a + a {
+  margin-left: 10px;
+}
+.red-6 {
+  color: $red-6;
+}
+.volcano-10 {
+  color: $volcano-10;
+}
+.input-icon {
+  color: rgba(0,0,0,.25);
+}
+.ant-menu-horizontal {
+  border-bottom: none!important;
+}
+.ant-menu-dark .ant-menu-submenu-selected {
+  background-color: #1890ff;
+  color: #fff;
+}
+.ant-menu-dark .ant-menu-submenu-open.ant-menu-submenu-active {
+  color: #fff;
+}
+//
+//.ant-menu-item:hover, .ant-menu-item-active, .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open, .ant-menu-submenu-active, .ant-menu-submenu-title:hover {
+//  color: #1890ff;
+//}

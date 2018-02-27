@@ -54,14 +54,14 @@ const routes = [
         title: 'Games',
         routes: [
           {
-            path: '/main/game/tic-tac-toe',
+            path: '/main/games/tic-tac-toe',
             component: Game,
             key: 'tic-tac-toe',
             title: 'Tic-Tac-Toe',
             exact: true,
           },
           {
-            path: '/main/game/tetris',
+            path: '/main/games/tetris',
             component: Tetris,
             key: 'tetris',
             title: 'Tetris',

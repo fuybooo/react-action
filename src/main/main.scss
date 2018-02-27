@@ -1,4 +1,4 @@
-@import "../shared/assets/vars.scss";
+@import "../shared/assets/scss/vars.scss";
 .main-container {
   background-color: $gray-1;
   padding: 24px;
@@ -29,5 +29,23 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+.main-user-part {
+  float: right;
+  margin: 0;
+  li {
+    float: left;
+    list-style: none;
+    color: $gray-1;
+    a {
+      color: $gray-4;
+      &:hover {
+        color: $gray-3;
+      }
+    }
+  }
+  li + li {
+    margin-left: 10px;
   }
 }
