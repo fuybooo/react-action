@@ -174,6 +174,9 @@
 .dibi {
   display: inline-block !important;
 }
+.flex1 {
+  flex: 1;
+}
 
 .oh {
   overflow: hidden;
@@ -408,6 +411,10 @@
   width: 195px;
 }
 
+.w200 {
+  width: 200px;
+}
+
 .w240 {
   width: 240px;
 }
@@ -544,6 +551,10 @@
 
 .min-w60 {
   min-width: 60px;
+}
+
+.min-w277 {
+  min-width: 277px;
 }
 
 .min-w1000 {
@@ -978,6 +989,10 @@
 
 .ml260 {
   margin-left: 260px;
+}
+
+.ml200 {
+  margin-left: 200px;
 }
 
 .ml298 {

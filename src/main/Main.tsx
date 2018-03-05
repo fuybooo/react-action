@@ -30,7 +30,7 @@ export default class Main extends React.Component<any, MainState> {
   }
   logoutClick() {
     $.post(urls.logout, {}, () => {
-      this.props.history.push('/login');
+      this.props.history.push('/');
     });
   }
   render() {

@@ -1,25 +1,17 @@
 import * as React from 'react';
-import {Row, Col, List} from 'antd';
+import {Row, Col, List, Radio, DatePicker, Input, Table} from 'antd';
 import * as $ from 'jquery';
 import urls, {HttpRes} from '../../shared/http/urls';
 import * as moment from 'moment';
 import './dashboard.scss';
+
 interface DashboardState {
-  params: {
-    search: string;
-    queryDevice: string; // 设备名称
-    queryOwner: string; // username
-    queryLevel: string; // '' / 1 / 2 / 3
-    queryDept: string; // 部门名称
-    lastTimeFrom: string; // 默认值 今天
-    lastTimeTo: string; // 默认值 今天
-    pageSize: number; // 默认值 100
-    pageNumber: number; // 默认值 1
-    sortName: string; // 默认值 时间
-    sortOrder: string; // 默认值 倒序
-  };
   summary: any[];
+  data: any[];
+  currentType: number;
+  loading: boolean;
 }
+
 const defaultLevelSummary = [
   {
     name: '1',
@@ -40,13 +32,41 @@ const defaultParams = {
   queryOwner: '', // username
   queryLevel: '', // '' / 1 / 2 / 3
   queryDept: '', // 部门名称
-  lastTimeFrom: moment().subtract(30, 'day').format('YYYY-MM-DD'), // 默认值 今天
+  lastTimeFrom: moment().subtract(60, 'day').format('YYYY-MM-DD'), // 默认值 今天
   lastTimeTo: moment(Date.now()).format('YYYY-MM-DD'), // 默认值 今天
   pageSize: 100, // 默认值 100
   pageNumber: 1, // 默认值 1
   sortName: '', // 默认值 时间
   sortOrder: '', // 默认值 倒序
 };
+const dashboardTypeList = [
+  {
+    label: '敏感词',
+    value: 1
+  },
+  {
+    label: '违规网址',
+    value: 2
+  },
+  {
+    label: '违规设备',
+    value: 3
+  },
+];
+const dashboardTypeKeyList = [
+  {
+    label: 'sensitiveWord',
+    value: 1
+  },
+  {
+    label: 'ilegalURL',
+    value: 2
+  },
+  {
+    label: 'illegalType',
+    value: 3
+  },
+];
 
 export default class Dashboard extends React.Component<any, DashboardState> {
   constructor(props: any) {
@@ -110,33 +130,116 @@ export default class Dashboard extends React.Component<any, DashboardState> {
           ]
         },
       ],
-      params: defaultParams
+      data: [],
+      currentType: 3,
+      loading: false
     };
   }
 
-  getSummary(params: any = {}) {
-    $.get(urls.get_users_and_devices_number, (res: HttpRes) => {
-      console.log(res);
+  getColumns(type: number) {
+    let currentTypeLabel: any = dashboardTypeList.find(v => v.value === type);
+    let currentTypeKey: any = dashboardTypeKeyList.find(v => v.value === type);
+    return [
+      {
+        title: '设备型号&持有人',
+        dataIndex: 'devicename',
+        key: 'devicename',
+        render: (text: any, record: any) => {
+          return <div>
+            <a>{text}</a>
+            <p>{record.owner}</p>
+          </div>;
+        }
+      },
+      {
+        title: '部门',
+        dataIndex: 'deptName',
+        key: 'deptName',
+      },
+      {
+        title: '电话',
+        dataIndex: 'phone',
+        key: 'phone'
+      },
+      {
+        title: currentTypeLabel.label,
+        dataIndex: currentTypeKey
+      },
+      {
+        title: '级别',
+        dataIndex: 'alarmLevel',
+        key: 'alarmLevel',
+        render: (text: any) => {
+          let res = '一级';
+          let cls = 'level-1';
+          if (text === 2) {
+            res = '二级';
+            cls = 'level-2';
+          } else if (text === 3) {
+            res = '三级';
+            cls = 'level-3';
+          }
+          return <span className={cls}>{res}</span>;
+        }
+      },
+      {
+        title: '时间',
+        dataIndex: 'updateTime',
+        key: 'updateTime'
+      }
+    ];
+  }
+
+  changeDataType(type: number) {
+    this.setState({
+      currentType: type
     });
-    $.get(urls.get_illegal_device_list, Object.assign({}, defaultParams, params), (res: HttpRes) => {
+    this.fetch(type);
+  }
+
+  fetch(type = this.state.currentType) {
+    let url = urls.get_sensitive_word_list;
+    if (type === 2) {
+      url = urls.get_illegal_url_list;
+    } else if (type === 3) {
+      url = urls.get_illegal_device_list;
+    }
+    $.get(url, Object.assign({}, defaultParams), (res: HttpRes) => {
       if (res.code === '200') {
         let summary: any[] = $.extend(true, [], this.state.summary);
         summary.find(value => value.title === 'Department').items = res.data.illegalDep;
         summary.find(value => value.title === 'User').items = res.data.illegalUser;
         summary.find(value => value.title === 'Level').items = res.data.illegalLevel.length ? res.data.illegalLevel : defaultLevelSummary;
         summary.find(value => value.title === 'Device').items = res.data.illegalDevice;
-        this.setState({summary});
+        this.setState({summary, data: res.data.result});
       }
     });
   }
-  componentDidMount() {
-    this.getSummary();
+
+  changeDateType(e: any) {
+    console.log('当前日期类型', e);
   }
+
+  changeDate(date: Date, dateString: string) {
+    console.log('当前日期:', date, dateString);
+  }
+
+  search(value: string) {
+    console.log('查询search:', value);
+  }
+
+  componentDidMount() {
+    $.get(urls.get_users_and_devices_number, (res: HttpRes) => {
+      console.log(res);
+    });
+    this.fetch();
+  }
+
   render() {
     return (
-      <Row gutter={16}>
-        {
-          ...(
+      <div>
+        <Row gutter={16}>
+          {
             Array(this.state.summary.length).fill(0).map((v, index) => {
               const value = this.state.summary[index];
               return (
@@ -152,7 +255,7 @@ export default class Dashboard extends React.Component<any, DashboardState> {
                         className={value.title === 'Level' ? 'list-level' : ''}
                       >
                         <span className={'dif w_80'}>{
-                          ((function(name){
+                          ((function (name) {
                             let res = name;
                             if (value.title === 'Level') {
                               if (name === '1') {
@@ -173,9 +276,41 @@ export default class Dashboard extends React.Component<any, DashboardState> {
                 </Col>
               );
             })
-          )
-        }
-      </Row>
+          }
+        </Row>
+        <div className={'mt20'}>
+          <Radio.Group defaultValue={1} onChange={this.changeDateType.bind(this)} className={'fl'}>
+            <Radio.Button value={1}>今天</Radio.Button>
+            <Radio.Button value={2}>近7天</Radio.Button>
+            <Radio.Button value={3}>近30天</Radio.Button>
+          </Radio.Group>
+          <DatePicker.RangePicker onChange={this.changeDate.bind(this)} className={'fl ml10'}/>
+          <Input.Search placeholder={'Input search text'} onSearch={this.search.bind(this)} enterButton
+                        className={'dashboard-input-search min-w277'}/>
+        </div>
+        <div className={'cb'}/>
+        <Row className={'common-content-wrap mt20'}>
+          <Col className={'common-ul-wrap'} xxl={3} xl={3} lg={4} md={4} sm={4} xs={5}>
+            <ul className={'common-ul'}>
+              {
+                $.extend(true, [], dashboardTypeList).map((item: any) => {
+                  return (
+                    <li key={item.value} onClick={this.changeDataType.bind(this, item.value)}>
+                      <a>{item.label}</a>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </Col>
+          <Col className={'common-center-wrap'} xxl={21} xl={21} lg={20} md={20} sm={20} xs={19}>
+            <Table loading={this.state.loading}
+                   columns={this.getColumns(this.state.currentType)}
+                   dataSource={this.state.data}
+                   scroll={{y: 240}}/>
+          </Col>
+        </Row>
+      </div>
     );
   }
 }
