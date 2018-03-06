@@ -33,8 +33,8 @@ a + a {
   overflow: hidden;
   .common-ul-wrap {
     background-color: $gray-3;
-    margin-bottom: -9999px;
-    padding-bottom: 9999px;
+    //margin-bottom: -9999px;
+    //padding-bottom: 9999px;
     .common-ul {
       margin: 0;
       padding: 0;
@@ -49,3 +49,36 @@ a + a {
     }
   }
 }
+.common-box {
+  border: 1px solid $gray-5;
+  border-radius: 4px;
+  padding: 10px;
+}
+.common-border {
+  border: 1px solid $gray-5;
+}
+.common-left-border-none {
+  border-left: none!important;
+}
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+//::-webkit-scrollbar {
+//  width: 6px;
+//  height: 6px;
+//  //width: 0;
+//  //height: 0;
+//  background-color: $gray-1;
+//}
+//
+///*定义滚动条轨道 内阴影+圆角*/
+//::-webkit-scrollbar-track {
+//  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+//  border-radius: 0;
+//  background-color: #F5F5F5;
+//}
+//
+///*定义滑块 内阴影+圆角*/
+//::-webkit-scrollbar-thumb {
+//  border-radius: 0;
+//  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+//  background-color: $gray-5;
+//}

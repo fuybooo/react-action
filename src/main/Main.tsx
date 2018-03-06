@@ -11,14 +11,15 @@ const {Header, Content, Footer} = Layout;
 const {SubMenu} = Menu;
 interface MainState {
   activeKey: string;
-  breadcrumbItems: any[]
+  breadcrumbItems: any[];
 }
 export default class Main extends React.Component<any, MainState> {
+  containerCls = 'main-container main-container-fixed';
   constructor(props: any) {
     super(props);
     this.state = {
       activeKey: 'dashboard',
-      breadcrumbItems: getDefaultBreadcrumb()
+      breadcrumbItems: getDefaultBreadcrumb(),
     }
   }
 
@@ -34,6 +35,7 @@ export default class Main extends React.Component<any, MainState> {
     });
   }
   render() {
+    this.containerCls = 'main-container';
     return (
       <Layout className={'layout'}>
         <Header>
@@ -62,7 +64,7 @@ export default class Main extends React.Component<any, MainState> {
             {/*<Breadcrumb.Item>App</Breadcrumb.Item>*/}
             {...this.state.breadcrumbItems}
           </Breadcrumb>
-          <div className={'main-container'}>
+          <div className={this.containerCls}>
             {this.props.routes.map((route: any, i: number) => (
               <RouteWithSubRoutes key={i} {...route}/>
             ))}

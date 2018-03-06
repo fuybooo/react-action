@@ -144,10 +144,11 @@ export default class Dashboard extends React.Component<any, DashboardState> {
         title: '设备型号&持有人',
         dataIndex: 'devicename',
         key: 'devicename',
+        width: '30%',
         render: (text: any, record: any) => {
           return <div>
             <a>{text}</a>
-            <p>{record.owner}</p>
+            <p className={'p0 m0'}>{record.owner}</p>
           </div>;
         }
       },
@@ -155,20 +156,24 @@ export default class Dashboard extends React.Component<any, DashboardState> {
         title: '部门',
         dataIndex: 'deptName',
         key: 'deptName',
+        width: '15%',
       },
       {
         title: '电话',
         dataIndex: 'phone',
-        key: 'phone'
+        key: 'phone',
+        width: '15%',
       },
       {
         title: currentTypeLabel.label,
+        width: '15%',
         dataIndex: currentTypeKey
       },
       {
         title: '级别',
         dataIndex: 'alarmLevel',
         key: 'alarmLevel',
+        width: '10%',
         render: (text: any) => {
           let res = '一级';
           let cls = 'level-1';
@@ -185,7 +190,8 @@ export default class Dashboard extends React.Component<any, DashboardState> {
       {
         title: '时间',
         dataIndex: 'updateTime',
-        key: 'updateTime'
+        key: 'updateTime',
+        width: '15%',
       }
     ];
   }
@@ -278,7 +284,8 @@ export default class Dashboard extends React.Component<any, DashboardState> {
             })
           }
         </Row>
-        <div className={'mt20'}>
+        <div className={'common-box mt20'}>
+        <div>
           <Radio.Group defaultValue={1} onChange={this.changeDateType.bind(this)} className={'fl'}>
             <Radio.Button value={1}>今天</Radio.Button>
             <Radio.Button value={2}>近7天</Radio.Button>
@@ -290,8 +297,8 @@ export default class Dashboard extends React.Component<any, DashboardState> {
         </div>
         <div className={'cb'}/>
         <Row className={'common-content-wrap mt20'}>
-          <Col className={'common-ul-wrap'} xxl={3} xl={3} lg={4} md={4} sm={4} xs={5}>
-            <ul className={'common-ul'}>
+          <Col className={'common-ul-wrap common-border'} xxl={3} xl={3} lg={4} md={4} sm={4} xs={5}>
+            <ul className={'common-ul h518'}>
               {
                 $.extend(true, [], dashboardTypeList).map((item: any) => {
                   return (
@@ -303,13 +310,14 @@ export default class Dashboard extends React.Component<any, DashboardState> {
               }
             </ul>
           </Col>
-          <Col className={'common-center-wrap'} xxl={21} xl={21} lg={20} md={20} sm={20} xs={19}>
+          <Col className={'common-center-wrap common-border common-left-border-none'} xxl={21} xl={21} lg={20} md={20} sm={20} xs={19}>
             <Table loading={this.state.loading}
                    columns={this.getColumns(this.state.currentType)}
                    dataSource={this.state.data}
-                   scroll={{y: 240}}/>
+                   scroll={{y: 400}}/>
           </Col>
         </Row>
+        </div>
       </div>
     );
   }

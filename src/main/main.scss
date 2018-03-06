@@ -5,11 +5,11 @@
   overflow: auto;
 }
 @media screen and (max-height: 581px) {
-  .main-container {
+  .main-container-fixed {
     min-height: 400px;
   }
 }@media screen and (min-height: 581px) {
-  .main-container {
+  .main-container-fixed {
     height: calc(100vh - 181px);
   }
 }
