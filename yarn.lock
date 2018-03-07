@@ -9,6 +9,10 @@
     "@types/express" "*"
     "@types/node" "*"
 
+"@types/classnames@^2.2.3":
+  version "2.2.3"
+  resolved "http://registry.npm.taobao.org/@types/classnames/download/@types/classnames-2.2.3.tgz#3f0ff6873da793870e20a260cada55982f38a9e5"
+
 "@types/events@*":
   version "1.1.0"
   resolved "http://registry.npm.taobao.org/@types/events/download/@types/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"

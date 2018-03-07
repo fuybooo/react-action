@@ -3,6 +3,8 @@ import {Row, Col, List, Radio, DatePicker, Input, Table} from 'antd';
 import * as $ from 'jquery';
 import urls, {HttpRes} from '../../shared/http/urls';
 import * as moment from 'moment';
+import {Moment} from 'moment';
+const classNames = require('classnames');
 import './dashboard.scss';
 
 interface DashboardState {
@@ -10,6 +12,8 @@ interface DashboardState {
   data: any[];
   currentType: number;
   loading: boolean;
+  range: any[];
+  search: string;
 }
 
 const defaultLevelSummary = [
@@ -32,8 +36,8 @@ const defaultParams = {
   queryOwner: '', // username
   queryLevel: '', // '' / 1 / 2 / 3
   queryDept: '', // 部门名称
-  lastTimeFrom: moment().subtract(60, 'day').format('YYYY-MM-DD'), // 默认值 今天
-  lastTimeTo: moment(Date.now()).format('YYYY-MM-DD'), // 默认值 今天
+  lastTimeFrom: moment().format('YYYY-MM-DD'), // 默认值 今天
+  lastTimeTo: moment().format('YYYY-MM-DD'), // 默认值 今天
   pageSize: 100, // 默认值 100
   pageNumber: 1, // 默认值 1
   sortName: '', // 默认值 时间
@@ -131,8 +135,10 @@ export default class Dashboard extends React.Component<any, DashboardState> {
         },
       ],
       data: [],
-      currentType: 3,
-      loading: false
+      currentType: 1,
+      loading: false,
+      range: [moment(), moment()],
+      search: ''
     };
   }
 
@@ -200,17 +206,21 @@ export default class Dashboard extends React.Component<any, DashboardState> {
     this.setState({
       currentType: type
     });
-    this.fetch(type);
+    this.fetch(type, {
+      search: this.state.search,
+      lastTimeFrom: this.state.range[0].format('YYYY-MM-DD'),
+      lastTimeTo: this.state.range[1].format('YYYY-MM-DD')
+    });
   }
 
-  fetch(type = this.state.currentType) {
+  fetch(type = this.state.currentType, params = {}) {
     let url = urls.get_sensitive_word_list;
     if (type === 2) {
       url = urls.get_illegal_url_list;
     } else if (type === 3) {
       url = urls.get_illegal_device_list;
     }
-    $.get(url, Object.assign({}, defaultParams), (res: HttpRes) => {
+    $.get(url, Object.assign({}, defaultParams, params), (res: HttpRes) => {
       if (res.code === '200') {
         let summary: any[] = $.extend(true, [], this.state.summary);
         summary.find(value => value.title === 'Department').items = res.data.illegalDep;
@@ -223,15 +233,39 @@ export default class Dashboard extends React.Component<any, DashboardState> {
   }
 
   changeDateType(e: any) {
-    console.log('当前日期类型', e);
+    const value = e.target.value;
+    let start, end = moment();
+    if (value === 1) {
+      start = moment();
+    } else if (value === 2) {
+      start = moment().subtract(7, 'day');
+    } else {
+      start = moment().subtract(1, 'month');
+    }
+    this.setState({range: [start, end]});
+    this.fetch(undefined, {
+      search: this.state.search,
+      lastTimeFrom: start.format('YYYY-MM-DD'),
+      lastTimeTo: end.format('YYYY-MM-DD')
+    });
   }
 
-  changeDate(date: Date, dateString: string) {
-    console.log('当前日期:', date, dateString);
+  changeDate(range: Moment[], rangeArr: string[]) {
+    this.setState({range});
+    this.fetch(undefined, {
+      search: this.state.search,
+      lastTimeFrom: rangeArr[0],
+      lastTimeTo: rangeArr[1]
+    });
   }
 
   search(value: string) {
-    console.log('查询search:', value);
+    this.setState({search: value});
+    this.fetch(undefined, {
+      search: value,
+      lastTimeFrom: this.state.range[0].format('YYYY-MM-DD'),
+      lastTimeTo: this.state.range[1].format('YYYY-MM-DD')
+    });
   }
 
   componentDidMount() {
@@ -291,7 +325,7 @@ export default class Dashboard extends React.Component<any, DashboardState> {
             <Radio.Button value={2}>近7天</Radio.Button>
             <Radio.Button value={3}>近30天</Radio.Button>
           </Radio.Group>
-          <DatePicker.RangePicker onChange={this.changeDate.bind(this)} className={'fl ml10'}/>
+          <DatePicker.RangePicker onChange={this.changeDate.bind(this)} className={'fl ml10'} value={this.state.range}/>
           <Input.Search placeholder={'Input search text'} onSearch={this.search.bind(this)} enterButton
                         className={'dashboard-input-search min-w277'}/>
         </div>
@@ -302,7 +336,8 @@ export default class Dashboard extends React.Component<any, DashboardState> {
               {
                 $.extend(true, [], dashboardTypeList).map((item: any) => {
                   return (
-                    <li key={item.value} onClick={this.changeDataType.bind(this, item.value)}>
+                    <li key={item.value} onClick={this.changeDataType.bind(this, item.value)}
+                        className={classNames('dashboard-list', {'active': this.state.currentType === item.value})}>
                       <a>{item.label}</a>
                     </li>
                   );

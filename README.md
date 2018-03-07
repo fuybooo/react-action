@@ -40,3 +40,6 @@
         1. 使用yarn eject之后,会导致上面配置的ts-import-plugin插件失效
           1. 安装react-scripts包 yarn add react-scripts
           2. 将之前添加的config-overrides.js中的配置加入到webpack.config.dev.js中
+### 开发过程
+    1. 使用classnames管理class  yarn add classnames
+    2. 难点：使得左右结构的布局中，左右高度相同且自适应，且有最小高度，且有边框。

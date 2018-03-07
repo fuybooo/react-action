@@ -1,3 +1,4 @@
+@import "../../shared/assets/scss/vars.scss";
 .ant-list-item.list-level {
   padding-top: 19.66666666px;
   padding-bottom: 19.66666666px;
@@ -6,4 +7,7 @@
   float: left;
   margin-left: 10px;
   width: calc(100vw - 745px);
+}
+.dashboard-list.active {
+  background-color: $blue-3;
 }
