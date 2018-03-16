@@ -50,12 +50,12 @@ a + a {
   }
 }
 .common-box {
-  border: 1px solid $gray-5;
+  border: $border;
   border-radius: 4px;
   padding: 10px;
 }
 .common-border {
-  border: 1px solid $gray-5;
+  border: $border;
 }
 .common-left-border-none {
   border-left: none!important;

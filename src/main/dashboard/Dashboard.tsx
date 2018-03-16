@@ -8,6 +8,7 @@ const classNames = require('classnames');
 import './dashboard.scss';
 
 interface DashboardState {
+  counts: any[];
   summary: any[];
   data: any[];
   currentType: number;
@@ -71,11 +72,28 @@ const dashboardTypeKeyList = [
     value: 3
   },
 ];
-
+const prefix = 'dashboard-';
+let timer1: number;
+let timer2: number;
+let deviceCount = 100;
+let userCount = 200;
+let totals = [
+  {
+    title: '总设备数',
+    img: 'dashboard_phone.png',
+    imgWrapCls: 'device'
+  },
+  {
+    title: '总用户数',
+    img: 'dashboard_users.png',
+    imgWrapCls: 'user'
+  }
+];
 export default class Dashboard extends React.Component<any, DashboardState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      counts:[0, 0],
       summary: [
         {
           title: 'Department',
@@ -259,32 +277,80 @@ export default class Dashboard extends React.Component<any, DashboardState> {
     });
   }
 
-  search(value: string) {
+  search = (e: any) => {
+    let value = e.target.value;
     this.setState({search: value});
     this.fetch(undefined, {
       search: value,
       lastTimeFrom: this.state.range[0].format('YYYY-MM-DD'),
       lastTimeTo: this.state.range[1].format('YYYY-MM-DD')
     });
-  }
+  };
 
   componentDidMount() {
     $.get(urls.get_users_and_devices_number, (res: HttpRes) => {
       console.log(res);
     });
     this.fetch();
+    $('.dashboard-summary').on('click', '.ant-list-item', (e) => {
+      console.log(e);
+    });
+    // 实现数字增长的动画效果
+    (() => {
+      cancelAnimationFrame(timer1);
+      const cb1 = () => {
+        if (this.state.counts[0] === deviceCount) {
+          this.setState({
+            counts: [this.state.counts.concat([])[0] + 1, this.state.counts[1]]
+          });
+          requestAnimationFrame(cb1);
+        } else {
+          cancelAnimationFrame(timer1);
+        }
+      };
+      timer1 = requestAnimationFrame(cb1);
+    })();
+    (() => {
+      cancelAnimationFrame(timer2);
+      const cb2 = () => {
+        if (this.state.counts[0] === userCount) {
+          this.setState({
+            counts: [this.state.counts[0], this.state.counts.concat([])[1] + 1]
+          });
+          requestAnimationFrame(cb2);
+        } else {
+          cancelAnimationFrame(timer2);
+        }
+      };
+      timer2 = requestAnimationFrame(cb2);
+    })();
   }
 
   render() {
     return (
       <div>
-        <Row gutter={16}>
+        <Row gutter={20}>
+          {
+            Array(2).fill(0).map((v, index) => {
+              const value = totals[index];
+              return <Col key={index} span={12}>
+                <div className={prefix + 'total-wrap'}>
+                  <h3 className={'title'}>{value.title}</h3>
+                  <div className={'count'} ref={'count-' + index}>{this.state.counts[index]}</div>
+                  <div className={'img ' + value.imgWrapCls}><img src={require(`./${value.img}`)}/></div>
+                </div>
+              </Col>
+            })
+          }
+        </Row>
+        <Row className={'mt20'} gutter={16}>
           {
             Array(this.state.summary.length).fill(0).map((v, index) => {
               const value = this.state.summary[index];
               return (
                 <Col key={index} span={6}>
                   <List
+                    className={prefix + 'summary'}
                     bordered={true}
                     key={value.title}
                     header={value.title}
@@ -292,7 +358,11 @@ export default class Dashboard extends React.Component<any, DashboardState> {
                     renderItem={(item: any) => (
                       <List.Item
                         key={item.name}
-                        className={value.title === 'Level' ? 'list-level' : ''}
+                        className={classNames({
+                          'list-item-1': value.items.length === 1,
+                          'list-item-2': value.items.length === 2,
+                          'list-item-3': value.items.length === 3,
+                        })}
                       >
                         <span className={'dif w_80'}>{
                           ((function (name) {
@@ -326,8 +396,8 @@ export default class Dashboard extends React.Component<any, DashboardState> {
             <Radio.Button value={3}>近30天</Radio.Button>
           </Radio.Group>
           <DatePicker.RangePicker onChange={this.changeDate.bind(this)} className={'fl ml10'} value={this.state.range}/>
-          <Input.Search placeholder={'Input search text'} onSearch={this.search.bind(this)} enterButton
-                        className={'dashboard-input-search min-w277'}/>
+          <Input.Search placeholder={'Input search text'} onKeyUp={this.search} ref={'search'} enterButton
+                        className={prefix + 'input-search min-w277'}/>
         </div>
         <div className={'cb'}/>
         <Row className={'common-content-wrap mt20'}>
@@ -337,7 +407,7 @@ export default class Dashboard extends React.Component<any, DashboardState> {
                 $.extend(true, [], dashboardTypeList).map((item: any) => {
                   return (
                     <li key={item.value} onClick={this.changeDataType.bind(this, item.value)}
-                        className={classNames('dashboard-list', {'active': this.state.currentType === item.value})}>
+                        className={classNames(prefix + 'list', {'active': this.state.currentType === item.value})}>
                       <a>{item.label}</a>
                     </li>
                   );
@@ -349,6 +419,7 @@ export default class Dashboard extends React.Component<any, DashboardState> {
             <Table loading={this.state.loading}
                    columns={this.getColumns(this.state.currentType)}
                    dataSource={this.state.data}
+                   className={prefix + 'table'}
                    scroll={{y: 400}}/>
           </Col>
         </Row>
