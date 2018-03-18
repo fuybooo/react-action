@@ -1,5 +1,5 @@
 const settings = {
-  path: 'http://192.168.7.108:18989',
+  path: 'http://test.quarkdata.cn',
   isStatic: false
 };
 export default settings;
