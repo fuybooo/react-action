@@ -290,40 +290,48 @@ export default class Dashboard extends React.Component<any, DashboardState> {
   componentDidMount() {
     $.get(urls.get_users_and_devices_number, (res: HttpRes) => {
       console.log(res);
+      deviceCount = +res.data.deviceNumber;
+      userCount = +res.data.userNumber;
+      let t = 0, t2 = 0, b = 0, d = 1500;
+      const changeFn = function(t: number, b: number, c: number, d: number) {
+        return -c *(t /= d)*(t-2) + b;
+      };
+      // 实现数字增长的动画效果
+      (() => {
+        cancelAnimationFrame(timer1);
+        const cb1 = () => {
+          if (t < d) {
+            this.setState({
+              counts: [Math.ceil(changeFn(t, b, deviceCount, d)), this.state.counts[1]]
+            });
+            t = 20 + t;
+            requestAnimationFrame(cb1);
+          } else {
+            cancelAnimationFrame(timer1);
+          }
+        };
+        timer1 = requestAnimationFrame(cb1);
+      })();
+      (() => {
+        cancelAnimationFrame(timer2);
+        const cb2 = () => {
+          if (t2 < d) {
+            this.setState({
+              counts: [this.state.counts[0], Math.ceil(changeFn(t2, b, userCount, d))]
+            });
+            t2 = 20 + t2;
+            requestAnimationFrame(cb2);
+          } else {
+            cancelAnimationFrame(timer2);
+          }
+        };
+        timer2 = requestAnimationFrame(cb2);
+      })();
     });
     this.fetch();
     $('.dashboard-summary').on('click', '.ant-list-item', (e) => {
       console.log(e);
     });
-    // 实现数字增长的动画效果
-    (() => {
-      cancelAnimationFrame(timer1);
-      const cb1 = () => {
-        if (this.state.counts[0] === deviceCount) {
-          this.setState({
-            counts: [this.state.counts.concat([])[0] + 1, this.state.counts[1]]
-          });
-          requestAnimationFrame(cb1);
-        } else {
-          cancelAnimationFrame(timer1);
-        }
-      };
-      timer1 = requestAnimationFrame(cb1);
-    })();
-    (() => {
-      cancelAnimationFrame(timer2);
-      const cb2 = () => {
-        if (this.state.counts[0] === userCount) {
-          this.setState({
-            counts: [this.state.counts[0], this.state.counts.concat([])[1] + 1]
-          });
-          requestAnimationFrame(cb2);
-        } else {
-          cancelAnimationFrame(timer2);
-        }
-      };
-      timer2 = requestAnimationFrame(cb2);
-    })();
   }
 
   render() {
